@@ -171,5 +171,5 @@ def merge_tables():
 
 
 if __name__ == "__main__":
-    scrape_nba_players()
+    # scrape_nba_players()
     merge_tables()

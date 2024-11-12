@@ -41,7 +41,7 @@ for c in ["Points", "Rebounds", "Assists", "Steals", "Blocks", "Turnovers", "Off
 df = df.drop(columns=["Match ID", "Team"])
 
 # remove players with less than 10 minutes played
-df = df.drop(df[df["Minute"] < 10].index)
+df = df.drop(df[df["Minute"] < 5].index)
 
 # TODO: get player-specific attributes and delete player name column
 
