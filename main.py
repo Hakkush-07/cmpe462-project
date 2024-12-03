@@ -46,6 +46,9 @@ def get_matches():
         # click previous button
         driver.find_elements(By.CSS_SELECTOR, "button[class='Button iCnTrv']")[0].click()
 
+        driver.implicitly_wait(20)
+        sleep(1)
+
         html = driver.page_source
 
         soup = BeautifulSoup(html, "lxml")
@@ -57,24 +60,43 @@ def get_matches():
             for j, link in matches:
                 file.write(f"{j} {link}\n")
         i += 1
-        if i > 20:
+        if i > 33:
             break
     
     driver.close()
+
+def combine_match_txt():
+    matches = []
+    for filename in listdir("matches"):
+        with open(f"matches/{filename}", "r+") as file:
+            for m in file.read().splitlines():
+                matches.append(m)
+    with open("nba.txt", "w+") as file:
+        file.write("\n".join(matches) + "\n")
 
 def stat_parser(html_team):
     soup = BeautifulSoup(html_team, "lxml")
     players = []
     stats = []
-    team_name = soup.find("div", {"class": "Box Flex gUNQxL izMxjT"}).find("img")["alt"]
+    teams = []
+    # team_name = soup.find("div", {"class": "Box Flex gUNQxL izMxjT"}).find("img")["alt"]
+    team1 = soup.find_all("img", {"class": "Img jbaYme"})[0]
+    team2 = soup.find_all("img", {"class": "Img jbaYme"})[1]
+    team_name1 = team1["alt"]
+    team_name2 = team2["alt"]
+    team_id1 = team1["src"]
+    team_id2 = team2["src"]
+    
     for player in soup.find("div", {"class": "Box Flex eYBhhw iWGVcA"}).find_all("div", {"class": "Box Flex ggRYVx cQgcrM"}):
         players.append((player.find("img")["alt"], player.find("span", {"class": "Text cMicsT"}).text))
-    for a in soup.find("div", {"class": "Box Flex aWUUI eAsfYD"}).find_all("div", {"class": "Box Flex ggRYVx cQgcrM"}):
+    for a in soup.find("div", {"class": "Box Flex iLOrTM fFmyKd"}).find_all("div", {"class": "Box Flex ggRYVx cQgcrM"}):
         stats.append([div.find("div").text for div in a.find_all("div", {"display": "flex"})])
+    for t in soup.find("div", {"class": "Box Flex eYBhhw iWGVcA"}).find_all("div", {"class": "Box Flex eJCdjm fRroAj"}):
+        teams.append(team_name1 if t.find("img")["src"] == team_id1 else team_name2)
     dct = {}
-    for p, s in zip(players, stats):
-        dct[p] = s
-    return dct, team_name
+    for p, n, s in zip(players, teams, stats):
+        dct[p] = [n] + s
+    return dct
     
 def get_match_info(link):
     chrome_options = Options()
@@ -88,35 +110,25 @@ def get_match_info(link):
 
     # click detailed stats button
     driver.find_elements(By.CSS_SELECTOR, "span[class=slider]")[0].click()
+    sleep(0.1)
     # driver.save_screenshot("test1.png")
 
-    # get the first team stats
-    html_a = driver.page_source
-
-    # click on the second team
-    driver.find_elements(By.CSS_SELECTOR, "div[data-testid=right]")[0].click()
-    # driver.save_screenshot("test2.png")
-
-    # get the second team stats
-    html_b = driver.page_source
+    # get both team stats
+    html = driver.page_source
     driver.close()
 
-    a, team_a = stat_parser(html_a)
-    b, team_b = stat_parser(html_b)
-    return a, team_a, b, team_b
+    return stat_parser(html)
 
 # create nba folder before running, and after combine all excels
 def f():
     with open("nba.txt", "r+") as file:
         for match_id, match_link in map(lambda x: x.split(), file.read().splitlines()):
             data = []
-            a, team_a, b, team_b = get_match_info(match_link)
-            for k, v in a.items():
+            for k, v in get_match_info(match_link).items():
                 player_name, player_position = k
-                data.append([match_id, team_a, player_name, player_position] + v)
-            for k, v in b.items():
-                player_name, player_position = k
-                data.append([match_id, team_b, player_name, player_position] + v)
+                team_name = v[0]
+                rest = v[1:]
+                data.append([match_id, team_name, player_name, player_position] + rest)
             df = pd.DataFrame(data)
             df.columns = ["Match ID", "Team", "Name", "Position", "Minute", "Points", "Rebounds", "Assists", "Steals", "Blocks", "Fouls", "Turnovers", "Offensive Rebounds", "Defensive Rebounds", "Field Goals", "Fields Goal Percentage", "Free Throws", "Free Throw Percentage", "3 Pointers", "3 Pointers Percentage", "Performance Rating"]
             df.to_excel(f"nba/m-{match_id}.xlsx")
@@ -130,15 +142,12 @@ def combine_excels():
     dfx.to_excel("nba.xlsx", index=False)
 
 if __name__ == "__main__":
-    # a, team_a, b, team_b = get_match_info("/basketball/match/alba-berlin-panathinaikos-bc/ivbsqvb#id:12544784")
-    # print(a)
-    # print(b)
-    # print(team_a)
-    # print(team_b)
-
+    # get_matches()
+    # combine_match_txt()
+    # get_match_info("/basketball/match/brooklyn-nets-sacramento-kings/ntbsLtb#id:12696573")
     # f()
-
     combine_excels()
+
 
 
 
