@@ -2,6 +2,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
+from sklearn.svm import LinearSVC
+from sklearn.linear_model import LogisticRegression
+import numpy as np
 
 df = pd.read_excel("nba.xlsx")
 
@@ -68,7 +71,7 @@ class LR:
     def predict(self, x):
         return LR.sigmoid(x.dot(self.weights.T) + self.bias)
 
-def get_weights_and_bias_for_binary_logistic_regression():
+def get_weights_and_bias():
     df = pd.read_excel("nba.xlsx")
     del df["Player Name"]
     df = df[[c for c in df.columns if c != "Position"] + ["Position"]]
@@ -84,16 +87,25 @@ def get_weights_and_bias_for_binary_logistic_regression():
     X = st_x.fit_transform(X)
 
     y = y.apply(lambda x: 1 if x == 1 else -1)
-    model = LR()
-    model.fit(X, y)
-    return model.weights, model.bias
 
-weights, bias = get_weights_and_bias_for_binary_logistic_regression()
-print(weights, bias)
+    model_lr = LogisticRegression(multi_class="multinomial", n_jobs=1, C=1)
+    model_lr.fit(X, y)
+
+    model_svm = LinearSVC()
+    model_svm.fit(X, y)
+
+    return model_lr.coef_[0], model_lr.intercept_, model_svm.coef_[0], model_svm.intercept_
+
+weights_lr, bias_lr, weights_svm, bias_svm = get_weights_and_bias()
+print(weights_lr, bias_lr)
+print(weights_svm, bias_svm)
+
 
 decision_boundry_x = np.linspace(0, max(df[a]))
-decision_boundry_y = (-weights[0] * decision_boundry_x - bias) / weights[1]
-plt.plot(decision_boundry_x, decision_boundry_y, 'k-')
+decision_boundry_lr_y = (-weights_lr[0] * decision_boundry_x - bias_lr) / weights_lr[1]
+decision_boundry_svm_y = (-weights_svm[0] * decision_boundry_x - bias_svm) / weights_svm[1]
+plt.plot(decision_boundry_x, decision_boundry_lr_y, 'k-', c="green")
+plt.plot(decision_boundry_x, decision_boundry_svm_y, 'k-')
 
 plt.show()
 
