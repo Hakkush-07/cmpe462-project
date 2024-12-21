@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+from time import time
 
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
@@ -60,14 +61,16 @@ def get_test_train(df):
     return X_train, X_test, y_train, y_test
 
 def scikit_logistic_regression(X_train, X_test, y_train, y_test):
+    start = time()
     model = LogisticRegression(random_state=42, solver="newton-cg", multi_class="multinomial", n_jobs=1, C=1)
     model.fit(X_train, y_train)
+    elapsed = time() - start
     predictions = model.predict(X_test)
     accuracy = accuracy_score(y_test, predictions)
-    return accuracy, predictions
+    return accuracy, predictions, elapsed
 
 class LR:
-    def __init__(self, learning_rate=0.001, iterations=1000):
+    def __init__(self, learning_rate=0.001, iterations=2000):
         self.learning_rate = learning_rate
         self.iterations = iterations
         self.weights = None
@@ -95,6 +98,7 @@ class LR:
         return LR.sigmoid(x.dot(self.weights.T) + self.bias)
 
 def my_logistic_regression(X_train, X_test, y_train, y_test):
+    start = time()
     all_predictions = []
     for i in [1, 2, 3]:
         y_train_new = y_train.apply(lambda x: 1 if x == i else -1)
@@ -107,22 +111,24 @@ def my_logistic_regression(X_train, X_test, y_train, y_test):
     for a1, a2, a3 in zip(*all_predictions):
         predictions.append(int(1 + np.argmax([a1, a2, a3])))
     predictions = np.array(predictions)
+
+    elapsed = time() - start
     
     accuracy = accuracy_score(y_test, predictions)
     
-    return accuracy, predictions
+    return accuracy, predictions, elapsed
 
 def main():
     df = read_and_process()
     # plot_classes(df)
     # plot_correlation(df)
     X_train, X_test, y_train, y_test = get_test_train(df)
-    accuracy_scikit, predictions_scikit = scikit_logistic_regression(X_train, X_test, y_train, y_test)
-    accuracy_my, predictions_my = my_logistic_regression(X_train, X_test, y_train, y_test)
-    plot_confusion(y_test, predictions_scikit)
-    plot_confusion(y_test, predictions_my)
-    print(f"scikit: {accuracy_scikit}")
-    print(f"my    : {accuracy_my}")
+    accuracy_scikit, predictions_scikit, runtime_scikit = scikit_logistic_regression(X_train, X_test, y_train, y_test)
+    accuracy_my, predictions_my, runtime_my = my_logistic_regression(X_train, X_test, y_train, y_test)
+    # plot_confusion(y_test, predictions_scikit)
+    # plot_confusion(y_test, predictions_my)
+    print(f"scikit: {accuracy_scikit} (runtime: {runtime_scikit})")
+    print(f"my    : {accuracy_my} (runtime: {runtime_my})")
 
 if __name__ == "__main__":
     main()
