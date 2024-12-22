@@ -18,7 +18,9 @@ grid_search = GridSearchCV(clf,param_grid={'n_estimators': [20,50,100,200,400]},
 
 grid_search.fit(X,y)
 
+
 best_param = grid_search.best_params_['n_estimators']
+print('Optimal tree number', best_param)
 clf1 = RandomForestClassifier(n_estimators=best_param)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42, shuffle=True, test_size=0.2)
@@ -27,11 +29,14 @@ clf1.fit(X_train,y_train)
 end_time= time.time()
 diff_time = end_time - start_time
 
+predictions_train = clf1.predict(X_train)
 predictions = clf1.predict(X_test)
 probabilities = clf1.predict_proba(X_test)
 acc = accuracy_score(y_test, predictions)
+acc_train = accuracy_score(y_train,predictions_train)
 avg = average_precision_score(y_test, probabilities,average='macro')
 recall = recall_score(y_test, predictions,average='macro')
 f1_score= f1_score(y_test, predictions,average='macro')
 roc_auc = roc_auc_score(y_test,probabilities,average='macro',multi_class='ovr')
-print()
+
+print('Train accuracy, test accuracy, average precision score, recall, f1_score, AUROC score and runtime', acc_train,acc,avg, recall, f1_score,roc_auc,diff_time)

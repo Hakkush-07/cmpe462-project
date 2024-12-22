@@ -72,6 +72,7 @@ X = st_x.fit_transform(X)
 
 k_values = [1,3,5,7,9]
 best_k = cross_validate(X,y,k_values)
+print('Best k value: ', best_k)
 # Split the data into training and test sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42, shuffle=True, test_size=0.2)
 
@@ -80,10 +81,12 @@ start_time = time.time()
 predictions = [kNN(X_train,y_train,X_test[i],best_k) for i in range(len(y_test))]
 end_time = time.time()
 duration_self_knn = end_time - start_time
-print('Duration knn from scratch: ', duration_self_knn)
 accuracy = accuracy_score(y_test,predictions)
 recall = recall_score(y_test, predictions,average='macro')
 f1_score= f1_score(y_test, predictions,average='macro')
+
+print('Test accuracy, recall, f1-score and runtime for kNN: ',
+          accuracy, recall, f1_score, duration_self_knn)
 
 
 
