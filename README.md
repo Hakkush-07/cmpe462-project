@@ -1,6 +1,6 @@
 # CMPE462 Machine Learning Project
 
-Team: Ludos (Hakan Karakuş, Hatice Erk, Melih Özcan)
+Team: Ludos (Hakan Karakuş, Melih Özcan)
 
 ## Data Collection
 
@@ -30,7 +30,7 @@ to install dependencies
 
 ### Random Forest
 
-`RandomForest.py` contains the kNN algoritm implemented from scratch.
+`RandomForest.py` contains the applications of the Random Forest Classifier algorithm and the hyperparameter tuning for it along with various metrics.
 
 ### Plotting
 
