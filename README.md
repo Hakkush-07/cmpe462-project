@@ -18,13 +18,19 @@ to install dependencies
 
 ### Logistic Regression
 
-`logistic_regression.py` contains both the scikit-learn and from scratch implementations. A correlation table and confusion matrices can be produces by the respective functions in here.
+`logistic_regression.py` contains both the scikit-learn and our from scratch implementations. A correlation table and confusion matrices can be produces by the respective functions in here.
 
 ### SVM
 
+`SVM_scratch.py` contains both the scikit-learn and our from scratch implementations. 
+
 ### kNN
 
+`kNN.py` contains both the scikit-learn and our from scratch implementations. 
+
 ### Random Forest
+
+`RandomForest.py` contains the kNN algoritm implemented from scratch.
 
 ### Plotting
 
