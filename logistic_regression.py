@@ -9,7 +9,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix, accuracy_score, ConfusionMatrixDisplay
 from sklearn.preprocessing import StandardScaler
 
-plt.rcParams.update({"font.size": 6})
+plt.rcParams.update({"font.size": 16}) # for confusion matrices to look good
+# plt.rcParams.update({"font.size": 6}) # for correlation matrix to look good
 
 position_dct = {
     "Guard": 1,

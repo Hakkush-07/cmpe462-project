@@ -104,8 +104,9 @@ print(weights_svm, bias_svm)
 decision_boundry_x = np.linspace(0, max(df[a]))
 decision_boundry_lr_y = (-weights_lr[0] * decision_boundry_x - bias_lr) / weights_lr[1]
 decision_boundry_svm_y = (-weights_svm[0] * decision_boundry_x - bias_svm) / weights_svm[1]
-plt.plot(decision_boundry_x, decision_boundry_lr_y, 'k-', c="green")
-plt.plot(decision_boundry_x, decision_boundry_svm_y, 'k-')
+plt.plot(decision_boundry_x, decision_boundry_lr_y, 'k-', c="green", label="Logistic Regression Decision Boundry")
+plt.plot(decision_boundry_x, decision_boundry_svm_y, 'k-', label="SVM Decision Boundry")
+plt.legend()
 
 plt.show()
 
