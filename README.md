@@ -2,6 +2,8 @@
 
 Team: Ludos (Hakan Karakuş, Melih Özcan)
 
+In this project, we train machine learning models to predicts the position (Guard, Forward, Center) of basketball players based on the match statistics.
+
 ## Data Collection
 
 to install dependencies (you may need to get a webdriver as well)
