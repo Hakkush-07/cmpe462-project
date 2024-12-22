@@ -6,7 +6,7 @@ from time import time
 
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import confusion_matrix, accuracy_score, ConfusionMatrixDisplay
+from sklearn.metrics import confusion_matrix, accuracy_score, ConfusionMatrixDisplay, recall_score, precision_score, f1_score, roc_auc_score
 from sklearn.preprocessing import StandardScaler
 
 plt.rcParams.update({"font.size": 16}) # for confusion matrices to look good
@@ -70,8 +70,13 @@ def scikit_logistic_regression(X_train, X_test, y_train, y_test):
     print(np.argmax(abs(mc[0])))
     elapsed = time() - start
     predictions = model.predict(X_test)
+
     accuracy = accuracy_score(y_test, predictions)
-    return accuracy, predictions, elapsed
+    recall = recall_score(y_test, predictions, average="macro")
+    precision = precision_score(y_test, predictions, average="macro")
+    f1 = f1_score(y_test, predictions, average="macro")
+    
+    return accuracy, recall, precision, f1, predictions, elapsed
 
 class LR:
     def __init__(self, learning_rate=0.001, iterations=2000):
@@ -119,20 +124,23 @@ def my_logistic_regression(X_train, X_test, y_train, y_test):
     elapsed = time() - start
     
     accuracy = accuracy_score(y_test, predictions)
+    recall = recall_score(y_test, predictions, average="macro")
+    precision = precision_score(y_test, predictions, average="macro")
+    f1 = f1_score(y_test, predictions, average="macro")
     
-    return accuracy, predictions, elapsed
+    return accuracy, recall, precision, f1, predictions, elapsed
 
 def main():
     df = read_and_process()
     # plot_classes(df)
     # plot_correlation(df)
     X_train, X_test, y_train, y_test = get_test_train(df)
-    accuracy_scikit, predictions_scikit, runtime_scikit = scikit_logistic_regression(X_train, X_test, y_train, y_test)
-    accuracy_my, predictions_my, runtime_my = my_logistic_regression(X_train, X_test, y_train, y_test)
+    accuracy_scikit, recall_scikit, precision_scikit, f1_scikit, predictions_scikit, runtime_scikit = scikit_logistic_regression(X_train, X_test, y_train, y_test)
+    accuracy_my, recall_my, precision_my, f1_my, predictions_my, runtime_my = my_logistic_regression(X_train, X_test, y_train, y_test)
     # plot_confusion(y_test, predictions_scikit)
     # plot_confusion(y_test, predictions_my)
-    print(f"scikit: {accuracy_scikit} (runtime: {runtime_scikit})")
-    print(f"my    : {accuracy_my} (runtime: {runtime_my})")
+    print(f"scikit: accuracy: {accuracy_scikit}, recall: {recall_scikit}, precision: {precision_scikit}, f1: {f1_scikit} (runtime: {runtime_scikit})")
+    print(f"my    : accuracy: {accuracy_my}, recall: {recall_my}, precision: {precision_my}, f1: {f1_my} (runtime: {runtime_my})")
 
 if __name__ == "__main__":
     main()
